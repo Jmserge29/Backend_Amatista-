@@ -36,46 +36,10 @@ createNote = (req, res) => {
 }
 
 updateNote = async (req, res) => {
-    const body = req.body
-
-    if (!body) {
-        return res.status(400).json({
-            success: false,
-            error: 'You must provide a body to update',
-        })
-    }
-
-    note.findOne({ _id: req.params.id }, (err, note) => {
-        if (err) {
-            return res.status(404).json({
-                err,
-                message: 'note not found!',
-            })
-        }
-
-        note.titulo = body.titulo
-        note.estado = body.estado
-        note.descripcion = body.descripcion
-        note.fecha = body.fecha
-        note.materia = body.materia
-
-        
-        note
-            .save()
-            .then(() => {
-                return res.status(200).json({
-                    success: true,
-                    id: tareas._id,
-                    message: 'note updated!',
-                })
-            })
-            .catch(error => {
-                return res.status(404).json({
-                    error,
-                    message: 'note not updated!',
-                })
-            })
+    const NotesMUpdated = await NotesByM.findByIdAndUpdate(req.params.id, req.body, {
+        new: true
     })
+    res.status(200).json(NotesMUpdated)
 }
 
 updateNoteId = async (req, res) => {

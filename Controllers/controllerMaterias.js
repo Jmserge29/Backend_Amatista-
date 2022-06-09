@@ -1,5 +1,5 @@
 const MateriasCollection = require('../Models/MateriasCollection')
-
+const Task = require('../Models/TaskUniversity')
 
 
 createCollection = (req, res) => {
@@ -197,33 +197,64 @@ getCollections = async (req, res) => {
 Dashboard = async (req, res) => {
     // Obtengo la data de las materias asignadas a esa collection, materias = data 
     const materias = await MateriasCollection.find({ collectionUniversity: req.params.collectionUniversity });
-    // Aquí le asigno la cantidad total de materias utilizando el vector de la data midiendo su longitud
-    const cant_materias= materias.length
     // Mapeo los vectores de las materias para la cantidad total de materias que tiene en un determinado día de la semana
-    var class_Monday = 0
-    var class_Tuesday = 0
-    var class_Wednesday = 0
-    var class_Thursday = 0
-    var class_Friday = 0
+    // var class_Monday = 0
+    // var class_Tuesday = 0
+    // var class_Wednesday = 0
+    // var class_Thursday = 0
+    // var class_Friday = 0
+    
+    // Mapeo el objeto de materias para obtener el _id de MongDB --> Proceder a buscar tasks
+    const dataMaterias = await Promise.all(
+        materias.map(async(dato) => {
+        // console.log('Los _id De MongoDB Son: ',dato._id)
+        // Materias_Id = Materias_Id+ ',' + dato._id
 
-        materias.map((dato) => {
-        if(dato.day_week === 'Lunes'){
-            class_Monday += 1
-        } else if (dato.day_week === 'Martes'){
-            class_Tuesday += 1
-        } else if (dato.day_week === 'Miércoles'){
-            class_Wednesday += 1
-        } else if (dato.day_week === 'Jueves'){
-            class_Thursday += 1
-        } else if (dato.day_week === 'Viernes'){
-            class_Friday += 1
-        } else {
-            console.log('Se solapan los datos')
-        }
+        // Buscar el objeto de las Tasks a partir de los id de las materias registrados anteriormente
+        const dataTask = await Task.find({ materias: dato._id });
+        var pruebaRea = 0
+        var pruebaPen = 0
+        var porcentaje = 0
+        var totalTasks = 0
+        var dta = 0
+        const dataTareasA = dataTask.map(async(dataT)=>{
+            totalTasks += 1
+            if(dataT.estado == false){
+                pruebaPen += 1
+            } else if(dataT.estado == true){
+                pruebaRea += 1
+            } else {
+                console.log('Se solapan los datos')
+            }
         })
-
-    res.status(201).json({message: true, materias: cant_materias, Lunes: class_Monday, martes: class_Tuesday, miércoles: class_Wednesday, jueves: class_Thursday, viernes: class_Friday})
-    // res.json(materias)
+        
+        if(totalTasks == 0){
+            totalTasks = 1
+        }
+        porcentaje = ((100*pruebaRea)/totalTasks)       // 100% --> Total de tareas | porcentaje ? --> tareas Realizadas
+        console.log('El Porcentaje general de la materia con _id: ',dato._id, ' es :', porcentaje + '%' )
+        // console.log('Las tareas Pendientes son: ', pruebaPen)
+        // console.log('Las tareas Realizadas son: ', pruebaRea)
+        return {IDMongo: dato._id, name: dato.name, collectionUniversity: dato.collectionUniversity, teacher: dato.teacher, day_week: dato.day_week, porcentaje: porcentaje}
+        })
+    )
+    console.log(dataMaterias)
+        // materias.map((dato) => {
+        // if(dato.day_week === 'Lunes'){
+        //     class_Monday += 1
+        // } else if (dato.day_week === 'Martes'){
+        //     class_Tuesday += 1
+        // } else if (dato.day_week === 'Miércoles'){
+        //     class_Wednesday += 1
+        // } else if (dato.day_week === 'Jueves'){
+        //     class_Thursday += 1
+        // } else if (dato.day_week === 'Viernes'){
+        //     class_Friday += 1
+        // } else {
+        //     console.log('Se solapan los datos')
+        // }
+        // })
+    res.status(201).json({message: true, data: dataMaterias})
 }
 
 

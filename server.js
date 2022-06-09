@@ -12,6 +12,7 @@ const RouteMaterias = require('./Routes/route.MateriasUniveristy')
 const RouteUniversity = require('./Routes/route.CollectionUniversity')
 const RouteNoteM = require('./Routes/route.NotesMateria')
 const RouteNoteG = require('./Routes/route.NotesGenerals')
+const RouteTask = require('./Routes/routeTaskMateria')
 // Importo las rutas de los dieferentes controladores y modelos utilizados
 
 mongoose
@@ -32,14 +33,34 @@ app.get('/', (req, res) => {
 // Ejemplo para verificar que si está cambiado como es el request del Backend
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors())
+app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
 app.use(cookieParser())
 app.use('/User', RouteUser)
 app.use('/Materia', RouteMaterias)
 app.use('/University', RouteUniversity)
 app.use('/NoteM', RouteNoteM)
 app.use('/NoteG', RouteNoteG)
+app.use('/Task', RouteTask)
 
 // Ejecución de variables de uso app.use()
+
+app.get('/createCookie', (req, res) => {
+	res
+		.status(202)
+		.cookie('Name', 'Rahul Ahire', {
+			sameSite: 'strict',
+			path: '/',
+			expires: new Date(new Date().getTime() + 100 * 1000),
+            httpOnly: true,
+		}).send("cookie being initialised")
+});
+app.get('/deleteCookie', (req, res) => {
+	res
+		.status(202)
+		.clearCookie('Name').send("cookies cleared")
+});
+app.listen(4000);
+
+// Demo ejecución y listening de cookies del Backend al Frontend
 
 

@@ -160,7 +160,7 @@ getCollectionById = async (req, res) => {
 }
 // Obtener Resultados de Collections de Universidades 
 getCollectionBy_idUser = async (req, res) => {
-    await Collection.findOne({ _idUser: req.params._idUser }, (err, collection) => {
+    await Collection.find({ _idUser: req.params._idUser }, (err, collection) => {
         if (err) {
             return res.status(400).json({ success: false, error: err })
         }

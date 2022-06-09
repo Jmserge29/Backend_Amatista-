@@ -17,6 +17,8 @@ router.post('/signup', UserCtrl.signup)
 router.post('/signin', UserCtrl.signin)
 // router.get('/me', UserCtrl.me)
 router.get('/me', UserCtrl.me)
+router.get('/userData', UserCtrl.DataUser)
+router.get('/Auth', UserCtrl.AuthToken)
 
 
 module.exports = router

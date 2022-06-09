@@ -36,46 +36,10 @@ createNote = (req, res) => {
 }
 
 updateNote = async (req, res) => {
-    const body = req.body
-
-    if (!body) {
-        return res.status(400).json({
-            success: false,
-            error: 'You must provide a body to update',
-        })
-    }
-
-    note.findOne({ _id: req.params.id }, (err, note) => {
-        if (err) {
-            return res.status(404).json({
-                err,
-                message: 'note not found!',
-            })
-        }
-
-        note.titulo = body.titulo
-        note.estado = body.estado
-        note.descripcion = body.descripcion
-        note.fecha = body.fecha
-        note.collectionUniversity = body.collectionUniversity
-
-        
-        note
-            .save()
-            .then(() => {
-                return res.status(200).json({
-                    success: true,
-                    id: tareas._id,
-                    message: 'note updated!',
-                })
-            })
-            .catch(error => {
-                return res.status(404).json({
-                    error,
-                    message: 'note not updated!',
-                })
-            })
+    const NotesGUpdated = await NotesG.findByIdAndUpdate(req.params.id, req.body, {
+        new: true
     })
+    res.status(200).json(NotesGUpdated)
 }
 
 updateNoteId = async (req, res) => {
@@ -197,6 +161,19 @@ getNotes = async (req, res) => {
     }).catch(err => console.log(err))
 }
 
+Dashboard = async (req, res) => {
+    // Obtengo la data de las notas asignadas a esa collection, notes = data 
+    const notes = await NotesG.find({ collectionUniversity: req.params.collectionUniversity });
+    // Aquí le asigno la cantidad total de notas utilizando el vector de la data midiendo su longitud
+    const cant_notes= notes.length
+    // Mapeo los vectores de las notas para la cantidad total de materias que tiene en un determinado día de la semana
+    var cant = notes.filter(o => o.estado).length;
+
+    res.status(201).json({message: true, notas: cant_notes, activas: cant})
+    // res.json(materias)
+}
+
+
 
 module.exports = {
     createNote,
@@ -207,5 +184,6 @@ module.exports = {
     getNoteById,
     getNoteByIden,
     getNoteByCollectionUniversity,
-    getNotes
+    getNotes,
+    Dashboard
 }

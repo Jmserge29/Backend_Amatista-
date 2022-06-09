@@ -15,6 +15,8 @@ router.delete('/NotesGeneralsCollection/:collectionUniversity', NotesGeneralsCtr
 router.get('/GetNotesGenerals/:id', NotesGeneralsCtrl.getNoteById)
 router.get('/NotesGeneralsCollection/:collectionUniversity', NotesGeneralsCtrl.getNoteByCollectionUniversity)
 router.get('/GetNotesGenerals', NotesGeneralsCtrl.getNotes)
+router.get('/Dashboard/:collectionUniversity', NotesGeneralsCtrl.Dashboard)
+
 //Ruta GET
 
 module.exports = router
